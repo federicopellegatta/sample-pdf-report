@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title th:text = "${header?.title}"></title>
-
-    <h1 th:text = "${header?.title}"></h1>
-    <h3 th:text = "${header?.description}"></h3>
+    <meta charset="UTF-8"/>
+    <title th:text="${header?.title}"></title>
 </head>
 <body>
+<h1 th:text="${header?.title}"></h1>
+<h3 th:text="${header?.description}"></h3>
+<p>This is a paragraph</p>
 
+<img src="imgs/female-avatar.png" alt="Image" width="100" height="100"/>
 </body>
 </html>

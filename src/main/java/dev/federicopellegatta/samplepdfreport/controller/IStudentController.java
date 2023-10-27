@@ -1,7 +1,6 @@
 package dev.federicopellegatta.samplepdfreport.controller;
 
 import dev.federicopellegatta.samplepdfreport.dto.StudentResponse;
-import dev.federicopellegatta.samplepdfreport.entity.StudentEntity;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;

@@ -1,5 +1,6 @@
 package dev.federicopellegatta.samplepdfreport.service;
 
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import dev.federicopellegatta.samplepdfreport.dto.StudentResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +11,8 @@ import org.thymeleaf.spring6.dialect.SpringStandardDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Collection;
 
 @Service
@@ -22,11 +21,26 @@ import java.util.Collection;
 public class PdfGeneratorService {
 	private final StudentService studentService;
 	
-	public String generatePdfReport() {
+	public byte[] generatePdfReport() {
 		Collection<StudentResponse> students = studentService.allStudents();
 		String html = parseHtmlTemplate(students);
 		
-		return "";
+		return savePdfDocument(html);
+	}
+	
+	private byte[] savePdfDocument(String html) {
+		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+			PdfRendererBuilder builder = new PdfRendererBuilder();
+			builder.withHtmlContent(html, PdfGeneratorService.class.getResource("/templates/imgs").toString());
+			builder.useFastMode();
+			builder.toStream(os);
+			builder.run();
+			
+			return os.toByteArray();
+		} catch (IOException ex) {
+			log.error("Unable to generate PDF!", ex);
+			throw new RuntimeException(ex);
+		}
 	}
 	
 	private String parseHtmlTemplate(Collection<StudentResponse> students) {

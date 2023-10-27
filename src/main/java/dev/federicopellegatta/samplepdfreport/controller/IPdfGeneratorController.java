@@ -11,5 +11,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Tag(name = "PDF generator controller", description = "PDF generator controller which generates PDF reports")
 public interface IPdfGeneratorController {
 	@GetMapping
-	ResponseEntity<String> generatePdfReport();
+	ResponseEntity<byte[]> generatePdfReport();
 }
