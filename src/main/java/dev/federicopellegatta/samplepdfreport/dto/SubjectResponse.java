@@ -7,10 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.Collection;
-import java.util.OptionalDouble;
 
 @AllArgsConstructor
 @NoArgsConstructor
