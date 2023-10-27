@@ -7,7 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Collection;
+import java.util.OptionalDouble;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,6 +18,7 @@ import java.util.Collection;
 @Data
 public class SubjectResponse {
 	private Subject subject;
+	private float average;
 	private Collection<MarkResponse> marks;
 	
 	/**
@@ -28,5 +32,8 @@ public class SubjectResponse {
 				.map(MarkEntity::getSubject)
 				.orElseThrow(() -> new IllegalArgumentException("Cannot create a SubjectResponse without a Subject"));
 		this.marks = markEntities.stream().map(MarkResponse::new).toList();
+		
+		double avg = markEntities.stream().mapToDouble(MarkEntity::getMark).average().orElse(0);
+		this.average = Math.round(avg * 10) / 10f; // round to 1 decimal
 	}
 }

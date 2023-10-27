@@ -1,7 +1,6 @@
 package dev.federicopellegatta.samplepdfreport.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import dev.federicopellegatta.samplepdfreport.entity.AddressEntity;
 import dev.federicopellegatta.samplepdfreport.entity.MarkEntity;
 import dev.federicopellegatta.samplepdfreport.entity.StudentEntity;
 import dev.federicopellegatta.samplepdfreport.entity.Subject;
@@ -28,6 +27,7 @@ public class StudentResponse {
 	private String email;
 	private String phoneNumber;
 	private AddressResponse address;
+	private Recap recap;
 	private Collection<SubjectResponse> subjects;
 	
 	public StudentResponse(StudentEntity studentEntity) {
@@ -45,5 +45,8 @@ public class StudentResponse {
 		this.subjects = marksBySubject.values().stream()
 				.map(SubjectResponse::new)
 				.toList();
+		
+		if (!this.subjects.isEmpty())
+			this.recap = new Recap(this.subjects);
 	}
 }
