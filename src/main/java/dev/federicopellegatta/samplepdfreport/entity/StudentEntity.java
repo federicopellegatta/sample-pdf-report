@@ -29,7 +29,7 @@ public class StudentEntity implements Serializable {
 	private String email;
 	@Column(name = "phone_number")
 	private String phoneNumber;
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "address", nullable = false)
 	private AddressEntity address;
 	@OneToMany(fetch = FetchType.LAZY)

@@ -17,6 +17,8 @@ public class AddressEntity {
 	private Long id;
 	@Column(name = "street", nullable = false)
 	private String street;
+	@Column(name = "number", nullable = false)
+	private int number;
 	@Column(name = "city", nullable = false)
 	private String city;
 	@Column(name = "zip_code", nullable = false)
@@ -26,6 +28,6 @@ public class AddressEntity {
 	
 	@Override
 	public String toString() {
-		return street + ", " + zipCode +", "+ city + ", " + country;
+		return street + ", " + number + ", " + zipCode + ", " + city + ", " + country;
 	}
 }
