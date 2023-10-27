@@ -45,7 +45,7 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
 									.subject(random.enumValue(Subject.class))
 									.date(random.localDate())
 									.examType(random.enumValue(ExamType.class))
-									.mark(Math.round(random.gaussian(7, 1.5f) * 2) / 2f)
+									.mark(getMark())
 									.build())
 							.toList();
 					
@@ -60,5 +60,15 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
 							.build();
 				})
 				.toList();
+	}
+	
+	private float getMark() {
+		float mark = Math.round(random.gaussian(7, 1.5f) * 2) / 2f;
+		
+		if (mark < 2)
+			return 2;
+		else if (mark > 10)
+			return 10;
+		return mark;
 	}
 }
