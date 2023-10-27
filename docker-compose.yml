@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  postgres-db:
+    container_name: postgres-school-register
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: school-register
+      PGDATA: /data/postgres
+      POSTGRES_DRIVER: org.postgresql.Driver
+    volumes:
+      - .data/postgres-school-register:/data/postgres
+    command: -p 5432
