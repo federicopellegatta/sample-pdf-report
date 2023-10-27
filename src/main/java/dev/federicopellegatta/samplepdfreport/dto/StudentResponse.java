@@ -27,7 +27,7 @@ public class StudentResponse {
 	private LocalDate birthDate;
 	private String email;
 	private String phoneNumber;
-	private AddressEntity address;
+	private AddressResponse address;
 	private Collection<SubjectResponse> subjects;
 	
 	public StudentResponse(StudentEntity studentEntity) {
@@ -36,7 +36,7 @@ public class StudentResponse {
 		this.birthDate = studentEntity.getBirthDate();
 		this.email = studentEntity.getEmail();
 		this.phoneNumber = studentEntity.getPhoneNumber();
-		this.address = studentEntity.getAddress();
+		this.address = new AddressResponse(studentEntity.getAddress());
 		
 		Map<Subject, List<MarkEntity>> marksBySubject = studentEntity.getMarks()
 				.stream()
