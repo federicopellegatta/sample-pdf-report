@@ -21,16 +21,16 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
 	public void run(String... args) {
 		if (studentRepository.count() == 0) {
 			log.info("No students found, creating some");
-			studentRepository.saveAll(createStudents(100));
+			studentRepository.saveAll(createStudents());
 			log.info(studentRepository.count() + " students created");
 		} else {
 			log.info(studentRepository.count() + " students found, skipping creation");
 		}
 	}
 	
-	private Collection<StudentEntity> createStudents(int numberOfStudents) {
+	private Collection<StudentEntity> createStudents() {
 		
-		return IntStream.range(0, random.integer(numberOfStudents))
+		return IntStream.range(0, 100)
 				.mapToObj(i -> {
 					AddressEntity address = AddressEntity.builder()
 							.street("via Roma")
@@ -60,6 +60,5 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
 							.build();
 				})
 				.toList();
-		
 	}
 }
