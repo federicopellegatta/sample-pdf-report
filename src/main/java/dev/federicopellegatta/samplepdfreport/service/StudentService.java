@@ -1,6 +1,6 @@
 package dev.federicopellegatta.samplepdfreport.service;
 
-import dev.federicopellegatta.samplepdfreport.entity.StudentEntity;
+import dev.federicopellegatta.samplepdfreport.dto.StudentResponse;
 import dev.federicopellegatta.samplepdfreport.repository.StudentRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,9 @@ import java.util.Collection;
 public class StudentService {
 	private final StudentRepository studentRepository;
 	
-	public Collection<StudentEntity> allStudents() {
-		return studentRepository.findAll();
+	public Collection<StudentResponse> allStudents() {
+		return studentRepository.findAll().stream()
+				.map(StudentResponse::new)
+				.toList();
 	}
 }

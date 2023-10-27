@@ -2,12 +2,12 @@ package dev.federicopellegatta.samplepdfreport.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import dev.federicopellegatta.samplepdfreport.entity.ExamType;
+import dev.federicopellegatta.samplepdfreport.entity.MarkEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -20,9 +20,9 @@ public class MarkResponse {
 	private ExamType examType;
 	private float mark;
 	
-	public String getFormattedMark() {
-		DecimalFormat df = new DecimalFormat();
-		df.setMaximumFractionDigits(1);
-		return df.format(this.mark);
+	public MarkResponse(MarkEntity markEntity) {
+		this.date = markEntity.getDate();
+		this.examType = markEntity.getExamType();
+		this.mark = markEntity.getMark();
 	}
 }

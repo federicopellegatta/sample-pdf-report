@@ -2,6 +2,9 @@ package dev.federicopellegatta.samplepdfreport.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import dev.federicopellegatta.samplepdfreport.entity.AddressEntity;
+import dev.federicopellegatta.samplepdfreport.entity.MarkEntity;
+import dev.federicopellegatta.samplepdfreport.entity.StudentEntity;
+import dev.federicopellegatta.samplepdfreport.entity.Subject;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +12,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,4 +29,21 @@ public class StudentResponse {
 	private String phoneNumber;
 	private AddressEntity address;
 	private Collection<SubjectResponse> subjects;
+	
+	public StudentResponse(StudentEntity studentEntity) {
+		this.name = studentEntity.getName();
+		this.surname = studentEntity.getSurname();
+		this.birthDate = studentEntity.getBirthDate();
+		this.email = studentEntity.getEmail();
+		this.phoneNumber = studentEntity.getPhoneNumber();
+		this.address = studentEntity.getAddress();
+		
+		Map<Subject, List<MarkEntity>> marksBySubject = studentEntity.getMarks()
+				.stream()
+				.collect(Collectors.groupingBy(MarkEntity::getSubject, Collectors.toList()));
+		
+		this.subjects = marksBySubject.values().stream()
+				.map(SubjectResponse::new)
+				.toList();
+	}
 }
