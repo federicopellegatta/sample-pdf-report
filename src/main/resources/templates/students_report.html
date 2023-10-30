@@ -18,7 +18,7 @@
 </head>
 <body>
 <div style="page-break-after: always" th:each="student : ${students}">
-    <h1 th:text="${student.getCompleteName()} + ' report'">Student report</h1>
+    <h1 th:text="${student.getCompleteName()}">Student name</h1>
 
     <div style="margin-bottom: 40px;">
         <div id="left-element">

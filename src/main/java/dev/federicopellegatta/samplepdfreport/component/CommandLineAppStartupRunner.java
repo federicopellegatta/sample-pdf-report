@@ -1,5 +1,8 @@
 package dev.federicopellegatta.samplepdfreport.component;
 
+import com.github.javafaker.Address;
+import com.github.javafaker.Faker;
+import com.github.javafaker.Name;
 import dev.federicopellegatta.samplepdfreport.entity.*;
 import dev.federicopellegatta.samplepdfreport.repository.StudentRepository;
 import lombok.AllArgsConstructor;
@@ -32,12 +35,14 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
 		
 		return IntStream.range(0, 100)
 				.mapToObj(i -> {
+					Faker faker = new Faker();
+					Address fakerAddress = faker.address();
 					AddressEntity address = AddressEntity.builder()
-							.street("via Roma")
-							.number(i)
-							.zipCode("20100")
-							.city("Milano")
-							.country("IT")
+							.street(fakerAddress.streetAddress())
+							.number(Integer.parseInt(fakerAddress.streetAddressNumber()))
+							.zipCode(fakerAddress.zipCode())
+							.city(fakerAddress.cityName())
+							.country(fakerAddress.country())
 							.build();
 					
 					Collection<MarkEntity> marks = IntStream.range(0, random.integer(30))
@@ -49,13 +54,16 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
 									.build())
 							.toList();
 					
+					Name fakerName = faker.name();
 					return StudentEntity.builder()
-							.name("Name " + i)
-							.surname("Surname " + i)
+							.name(fakerName.firstName())
+							.surname(fakerName.lastName())
 							.gender(random.bool() ? Gender.MALE : Gender.FEMALE)
-							.email(random.bool() ? "email" + i + "@example.com" : null)
+							.email(random.bool()
+							       ? fakerName.firstName() + "." + fakerName.lastName() + "@example.com"
+							       : null)
 							.birthDate(random.localDate())
-							.phoneNumber(random.bool() ? "1234567890" : null)
+							.phoneNumber(random.bool() ? faker.phoneNumber().phoneNumber() : null)
 							.address(address)
 							.marks(marks)
 							.build();
