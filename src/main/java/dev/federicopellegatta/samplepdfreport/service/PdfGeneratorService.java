@@ -23,7 +23,10 @@ public class PdfGeneratorService {
 	
 	public byte[] generatePdfReport() {
 		Collection<StudentResponse> students = studentService.allStudents();
-		String html = parseHtmlTemplate(students);
+		
+		Context context = new Context();
+		context.setVariable("students", students);
+		String html = parseHtmlTemplate("students_report", context);
 		
 		return savePdfDocument(html);
 	}
@@ -43,7 +46,7 @@ public class PdfGeneratorService {
 		}
 	}
 	
-	private String parseHtmlTemplate(Collection<StudentResponse> students) {
+	private String parseHtmlTemplate(String templateName, Context context) {
 		ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
 		templateResolver.setPrefix("templates/"); // thymeleaf searches for templates in resources/templates
 		templateResolver.setSuffix(".html");
@@ -53,11 +56,6 @@ public class PdfGeneratorService {
 		templateEngine.setDialect(new SpringStandardDialect());
 		templateEngine.setTemplateResolver(templateResolver);
 		
-		Context context = new Context();
-		context.setVariable("class", "4D");
-		context.setVariable("header", new ReportHeader("School register", "A report"));
-		context.setVariable("students", students);
-		
-		return templateEngine.process("school_register", context);
+		return templateEngine.process(templateName, context);
 	}
 }

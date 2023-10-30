@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Students report</title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../static/css/style.css" type='text/css'/>
+
+    <style>
+        @page {
+            size: 210mm 297mm;
+            margin: 19mm 19mm 19mm 19mm;
+            /* change the margins as you want them to be. */
+        }
+
+    </style>
+</head>
+<body>
+<div style="page-break-after: always" th:each="student : ${students}">
+    <h1 th:text="${student.getCompleteName()} + ' report'">Student report</h1>
+
+    <div style="margin-bottom: 40px;">
+        <div id="left-element">
+            <img src="../static/imgs/male-avatar.png" alt="Avatar" width="100%"/>
+        </div>
+        <div id="right-element" class="container">
+            <div class="vertical-center">
+                <table class="info">
+                    <tr>
+                        <td>Name:</td>
+                        <td th:text="${student.getCompleteName()}">Doe John</td>
+                    </tr>
+                    <tr>
+                        <td>Birthday:</td>
+                        <td th:text="${student.birthDate}">2000-01-01</td>
+                    </tr>
+                    <tr>
+                        <td>Address:</td>
+                        <td th:text="${student.address?.toString()}">via Roma, 1, 20010, Milano, Italy</td>
+                    </tr>
+                    <tr th:if="${student.phoneNumber != null}">
+                        <td>Phone Number:</td>
+                        <td th:text="${student.phoneNumber}">012345</td>
+                    </tr>
+                    <tr th:if="${student.email != null}">
+                        <td>Email:</td>
+                        <td th:text="${student.email}">john.doe@mail.com</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:each="subject : ${student.subjects}">
+
+        <table class="table-marks">
+            <thead>
+            <tr>
+                <th scope="col"><b th:text="${subject.subject}">MATH</b></th>
+                <th scope="col">Date</th>
+                <th scope="col">Exam type</th>
+                <th scope="col">Mark</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="grade,idx : ${subject.marks}">
+                <th scope="row" th:text="${idx.index + 1}">1</th>
+                <td th:text="${grade.date}">2020-01-01</td>
+                <td th:text="${grade.examType}">WRITTEN</td>
+                <td th:text="${grade.mark}">10.0</td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <th scope="row"></th>
+                <td></td>
+                <td><b>Average</b></td>
+                <td><b th:text="${subject.average}">10.0</b></td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

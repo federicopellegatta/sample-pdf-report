@@ -49,4 +49,8 @@ public class StudentResponse {
 		if (!this.subjects.isEmpty())
 			this.recap = new Recap(this.subjects);
 	}
+	
+	public String getCompleteName() {
+		return name + " " + surname;
+	}
 }
