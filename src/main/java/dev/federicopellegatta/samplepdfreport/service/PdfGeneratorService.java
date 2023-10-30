@@ -31,7 +31,7 @@ public class PdfGeneratorService {
 	private byte[] savePdfDocument(String html) {
 		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 			PdfRendererBuilder builder = new PdfRendererBuilder();
-			builder.withHtmlContent(html, PdfGeneratorService.class.getResource("/templates/imgs").toString());
+			builder.withHtmlContent(html, PdfGeneratorService.class.getResource("/templates/").toString());
 			builder.useFastMode();
 			builder.toStream(os);
 			builder.run();
@@ -55,7 +55,7 @@ public class PdfGeneratorService {
 		
 		Context context = new Context();
 		context.setVariable("class", "4D");
-		context.setVariable("header", new ReportHeader("School register", "A students report"));
+		context.setVariable("header", new ReportHeader("School register", "A report"));
 		context.setVariable("students", students);
 		
 		return templateEngine.process("school_register", context);
