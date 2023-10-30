@@ -23,6 +23,9 @@ public class StudentEntity implements Serializable {
 	private String name;
 	@Column(name = "surname", nullable = false)
 	private String surname;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "gender", nullable = false)
+	private Gender gender;
 	@Column(name = "birth_date", nullable = false)
 	private LocalDate birthDate;
 	@Column(name = "email")

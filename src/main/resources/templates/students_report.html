@@ -22,7 +22,8 @@
 
     <div style="margin-bottom: 40px;">
         <div id="left-element">
-            <img src="../static/imgs/male-avatar.png" alt="Avatar" width="100%"/>
+            <img th:if="${student.gender.name() == 'MALE'}" src="../static/imgs/male-avatar.png" alt="Avatar" width="100%"/>
+            <img th:unless="${student.gender.name() == 'MALE'}" src="../static/imgs/female-avatar.png" alt="Avatar" width="100%"/>
         </div>
         <div id="right-element" class="container">
             <div class="vertical-center">

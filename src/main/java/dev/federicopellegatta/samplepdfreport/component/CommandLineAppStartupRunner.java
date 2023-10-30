@@ -52,6 +52,7 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
 					return StudentEntity.builder()
 							.name("Name " + i)
 							.surname("Surname " + i)
+							.gender(random.bool() ? Gender.MALE : Gender.FEMALE)
 							.email(random.bool() ? "email" + i + "@example.com" : null)
 							.birthDate(random.localDate())
 							.phoneNumber(random.bool() ? "1234567890" : null)
