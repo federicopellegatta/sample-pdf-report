@@ -1,9 +1,11 @@
 package dev.federicopellegatta.samplepdfreport.service;
 
+import com.openhtmltopdf.pdfboxout.PdfBoxRenderer;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import dev.federicopellegatta.samplepdfreport.dto.StudentResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -21,23 +23,41 @@ import java.util.Collection;
 public class PdfGeneratorService {
 	private final StudentService studentService;
 	
-	public byte[] generatePdfReport() {
+	public byte[] generatePdfReport(boolean header, boolean footer, boolean watermark) {
 		Collection<StudentResponse> students = studentService.allStudents();
 		
 		Context context = new Context();
 		context.setVariable("students", students);
 		String html = parseHtmlTemplate("students_report", context);
 		
-		return savePdfDocument(html);
+		return savePdfDocument(html, header, footer, watermark);
 	}
 	
-	private byte[] savePdfDocument(String html) {
+	private byte[] savePdfDocument(String html, boolean header, boolean footer, boolean watermark) {
 		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 			PdfRendererBuilder builder = new PdfRendererBuilder();
 			builder.withHtmlContent(html, PdfGeneratorService.class.getResource("/templates/").toString());
 			builder.useFastMode();
 			builder.toStream(os);
-			builder.run();
+			
+			if (header || footer || watermark) {
+				PDDocument document = new PDDocument();
+				builder.usePDDocument(document);
+				PdfBoxRenderer renderer = builder.buildPdfRenderer();
+				renderer.createPDFWithoutClosing();
+				renderer.close();
+				
+				PDDocumentBuilder documentBuilder = new PDDocumentBuilder(document);
+				if (header) documentBuilder = documentBuilder.addHeader();
+				if (footer) documentBuilder = documentBuilder.addFooter();
+				if (watermark) documentBuilder = documentBuilder.addWatermark("Internal use only");
+				document = documentBuilder.build();
+				
+				document.save(os);
+				document.close();
+			} else {
+				builder.run();
+			}
 			
 			return os.toByteArray();
 		} catch (IOException ex) {
