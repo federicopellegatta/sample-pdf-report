@@ -12,6 +12,9 @@
             size: 210mm 297mm;
             margin: 19mm 19mm 19mm 19mm;
             /* change the margins as you want them to be. */
+            @bottom-right {
+                content: "Page " counter(page) " of " counter(pages);
+            }
         }
 
     </style>
