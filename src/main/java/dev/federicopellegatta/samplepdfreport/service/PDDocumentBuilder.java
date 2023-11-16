@@ -42,19 +42,19 @@ public class PDDocumentBuilder {
 				float startY = page.getCropBox().getUpperRightY() - 30;
 				float startX = page.getCropBox().getLowerLeftX() + 55;
 				
+				// add an image
 				PDImageXObject pdImage =
 						PDImageXObject.createFromFile("src/main/resources/static/imgs/logo.jpg", document);
 				int imageWidth = (int) (page.getCropBox().getWidth() / 20);
 				int imageHeight = (int) (page.getCropBox().getWidth() / 20);
 				contentStream.drawImage(pdImage, startX, startY - imageHeight, imageWidth, imageHeight);
 				
-				
+				// add some text
 				contentStream.beginText();
 				contentStream.newLineAtOffset(startX + imageWidth + 10, startY - fontSize);
 				contentStream.showText("Highland College");
 				contentStream.showText(" - " + studentNames.getOrDefault(pageNumber, ""));
-				
-				contentStream.endText(); // End of text mode
+				contentStream.endText();
 				
 			} catch (IOException e) {
 				throw new RuntimeException(e.getMessage());
