@@ -1,18 +1,24 @@
 package dev.federicopellegatta.samplepdfreport.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.util.Matrix;
 
 import java.awt.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
+@Slf4j
 public class PDDocumentBuilder {
 	private final PDDocument document;
 	
@@ -21,9 +27,12 @@ public class PDDocumentBuilder {
 	}
 	
 	public PDDocumentBuilder addHeader() {
+		log.info("Adding header to PDF document");
 		int fontSize = 15;
 		PDType1Font font = PDType1Font.TIMES_ROMAN;
 		
+		int pageNumber = 1;
+		Map<Integer, String> studentNames = getPageNumberToStudentNameMap(); // FIXME this will be slow for large PDFs
 		for (PDPage page : document.getPages()) {
 			
 			try (PDPageContentStream contentStream = new PDPageContentStream(document, page,
@@ -42,19 +51,60 @@ public class PDDocumentBuilder {
 				
 				contentStream.beginText();
 				contentStream.newLineAtOffset(startX + imageWidth + 10, startY - fontSize);
-				contentStream.showText("School Report");
+				contentStream.showText("Highland College");
+				contentStream.showText(" - " + studentNames.getOrDefault(pageNumber, ""));
 				
 				contentStream.endText(); // End of text mode
 				
 			} catch (IOException e) {
 				throw new RuntimeException(e.getMessage());
 			}
+			
+			++pageNumber;
 		}
 		
 		return new PDDocumentBuilder(document);
 	}
 	
+	private Map<Integer, String> getPageNumberToStudentNameMap() {
+		int pageNumber = 1;
+		Map<Integer, String> pageNumberToStudentNameMap = new HashMap<>();
+		for (PDPage ignored : document.getPages()) {
+			String studentName;
+			try {
+				studentName = getStudentNameAtPageNumber(pageNumber);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			pageNumberToStudentNameMap.put(pageNumber, studentName);
+			++pageNumber;
+		}
+		
+		return pageNumberToStudentNameMap;
+	}
+	
+	private String getStudentNameAtPageNumber(int pageNumber) throws IOException {
+		if (pageNumber - 1 < 0) return "";
+		
+		PDFTextStripper reader = new PDFTextStripper();
+		reader.setStartPage(pageNumber);
+		reader.setEndPage(pageNumber);
+		String pageText = reader.getText(document);
+		Optional<String> studentNameOpt = getStudentNameFromPageText(pageText);
+		
+		return studentNameOpt.orElse(getStudentNameAtPageNumber(pageNumber - 1));
+	}
+	
+	private Optional<String> getStudentNameFromPageText(String pageText) {
+		String[] lines = pageText.split("\n");
+		if (lines.length > 2 && lines[0].contains("Page") && lines[2].isBlank())
+			return Optional.of(lines[1].trim());
+		
+		return Optional.empty();
+	}
+	
 	public PDDocumentBuilder addFooter() {
+		log.info("Adding footer to PDF document");
 		int fontSize = 12;
 		PDType1Font font = PDType1Font.TIMES_ROMAN;
 		
@@ -82,6 +132,7 @@ public class PDDocumentBuilder {
 	}
 	
 	public PDDocumentBuilder addWatermark(String watermark) throws IOException {
+		log.info("Adding watermark to PDF document with text: {}", watermark);
 		int fontSize = 80;
 		PDType1Font font = PDType1Font.TIMES_BOLD;
 		
