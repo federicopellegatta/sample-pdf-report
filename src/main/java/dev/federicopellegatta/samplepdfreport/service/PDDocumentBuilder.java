@@ -27,6 +27,8 @@ public class PDDocumentBuilder {
 		log.info("Adding header to PDF document");
 		int fontSize = 15;
 		PDType1Font font = PDType1Font.TIMES_ROMAN;
+		float marginX = 55f;
+		float marginY = 30f;
 		
 		int pageNumber = 1;
 		Map<Integer, String> studentNamesMap = new PdfPageStudentMapper(document).getPageNumberToStudentNameMap();
@@ -36,8 +38,8 @@ public class PDDocumentBuilder {
 			                                                                 PDPageContentStream.AppendMode.APPEND,
 			                                                                 true, false)) {
 				contentStream.setFont(font, fontSize);
-				float startY = page.getCropBox().getUpperRightY() - 30;
-				float startX = page.getCropBox().getLowerLeftX() + 55;
+				float startY = page.getCropBox().getUpperRightY() - marginY;
+				float startX = page.getCropBox().getLowerLeftX() + marginX;
 				
 				// add an image
 				PDImageXObject pdImage =
@@ -46,11 +48,18 @@ public class PDDocumentBuilder {
 				int imageHeight = (int) (page.getCropBox().getWidth() / 20);
 				contentStream.drawImage(pdImage, startX, startY - imageHeight, imageWidth, imageHeight);
 				
-				// add some text
+				// add some text next to the image
 				contentStream.beginText();
 				contentStream.newLineAtOffset(startX + imageWidth + 10, startY - fontSize);
 				contentStream.showText("Highland College");
-				contentStream.showText(" - " + studentNamesMap.getOrDefault(pageNumber, ""));
+				contentStream.endText();
+				
+				// align text to the right
+				String studentName = studentNamesMap.getOrDefault(pageNumber, "");
+				float textWidth = getTextWidth(font, fontSize, studentName);
+				contentStream.beginText();
+				contentStream.newLineAtOffset(page.getCropBox().getWidth() - marginX - textWidth, startY - fontSize);
+				contentStream.showText(studentName);
 				contentStream.endText();
 				
 			} catch (IOException e) {
