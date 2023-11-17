@@ -17,6 +17,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 public class PDDocumentBuilder {
@@ -32,7 +34,8 @@ public class PDDocumentBuilder {
 		PDType1Font font = PDType1Font.TIMES_ROMAN;
 		
 		int pageNumber = 1;
-		Map<Integer, String> studentNames = getPageNumberToStudentNameMap(); // FIXME this will be slow for large PDFs
+		getPageNumberToStudentNameMap(); // FIXME this will be slow for large PDFs
+		Map<Integer, String> studentNames = getPageNumberToStudentNameMapParallel();
 		for (PDPage page : document.getPages()) {
 			
 			try (PDPageContentStream contentStream = new PDPageContentStream(document, page,
@@ -66,7 +69,32 @@ public class PDDocumentBuilder {
 		return new PDDocumentBuilder(document);
 	}
 	
+	private Map<Integer, String> getPageNumberToStudentNameMapParallel() {
+		long startTime = System.nanoTime();
+		HashMap<Integer, String> result = IntStream.range(1, document.getNumberOfPages())
+				.parallel()
+				.mapToObj(pageNumber -> {
+					try {
+						return Map.entry(pageNumber, getStudentNameAtPageNumber(pageNumber));
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.collect(Collectors.toMap(Map.Entry::getKey,
+				                          Map.Entry::getValue,
+				                          (a, b) -> {
+					                          throw new IllegalStateException("Duplicate page number " + a);
+				                          },
+				                          HashMap::new));
+		long endTime = System.nanoTime();
+		log.info("Tempo di esecuzione in parallelo: {} ms", (endTime - startTime) / 1000000);
+		return result;
+		
+	}
+	
 	private Map<Integer, String> getPageNumberToStudentNameMap() {
+		long startTime = System.nanoTime();
+		
 		int pageNumber = 1;
 		Map<Integer, String> pageNumberToStudentNameMap = new HashMap<>();
 		for (PDPage ignored : document.getPages()) {
@@ -80,6 +108,8 @@ public class PDDocumentBuilder {
 			++pageNumber;
 		}
 		
+		long endTime = System.nanoTime();
+		log.info("Tempo di esecuzione non in parallelo: {} ms", (endTime - startTime) / 1000000);
 		return pageNumberToStudentNameMap;
 	}
 	
