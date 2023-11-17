@@ -7,18 +7,13 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
-import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.util.Matrix;
 
 import java.awt.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Slf4j
 public class PDDocumentBuilder {
@@ -34,8 +29,7 @@ public class PDDocumentBuilder {
 		PDType1Font font = PDType1Font.TIMES_ROMAN;
 		
 		int pageNumber = 1;
-		getPageNumberToStudentNameMap(); // FIXME this will be slow for large PDFs
-		Map<Integer, String> studentNames = getPageNumberToStudentNameMapParallel();
+		Map<Integer, String> studentNamesMap = new PdfPageStudentMapper(document).getPageNumberToStudentNameMap();
 		for (PDPage page : document.getPages()) {
 			
 			try (PDPageContentStream contentStream = new PDPageContentStream(document, page,
@@ -56,7 +50,7 @@ public class PDDocumentBuilder {
 				contentStream.beginText();
 				contentStream.newLineAtOffset(startX + imageWidth + 10, startY - fontSize);
 				contentStream.showText("Highland College");
-				contentStream.showText(" - " + studentNames.getOrDefault(pageNumber, ""));
+				contentStream.showText(" - " + studentNamesMap.getOrDefault(pageNumber, ""));
 				contentStream.endText();
 				
 			} catch (IOException e) {
@@ -67,70 +61,6 @@ public class PDDocumentBuilder {
 		}
 		
 		return new PDDocumentBuilder(document);
-	}
-	
-	private Map<Integer, String> getPageNumberToStudentNameMapParallel() {
-		long startTime = System.nanoTime();
-		HashMap<Integer, String> result = IntStream.range(1, document.getNumberOfPages())
-				.parallel()
-				.mapToObj(pageNumber -> {
-					try {
-						return Map.entry(pageNumber, getStudentNameAtPageNumber(pageNumber));
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				})
-				.collect(Collectors.toMap(Map.Entry::getKey,
-				                          Map.Entry::getValue,
-				                          (a, b) -> {
-					                          throw new IllegalStateException("Duplicate page number " + a);
-				                          },
-				                          HashMap::new));
-		long endTime = System.nanoTime();
-		log.info("Tempo di esecuzione in parallelo: {} ms", (endTime - startTime) / 1000000);
-		return result;
-		
-	}
-	
-	private Map<Integer, String> getPageNumberToStudentNameMap() {
-		long startTime = System.nanoTime();
-		
-		int pageNumber = 1;
-		Map<Integer, String> pageNumberToStudentNameMap = new HashMap<>();
-		for (PDPage ignored : document.getPages()) {
-			String studentName;
-			try {
-				studentName = getStudentNameAtPageNumber(pageNumber);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			pageNumberToStudentNameMap.put(pageNumber, studentName);
-			++pageNumber;
-		}
-		
-		long endTime = System.nanoTime();
-		log.info("Tempo di esecuzione non in parallelo: {} ms", (endTime - startTime) / 1000000);
-		return pageNumberToStudentNameMap;
-	}
-	
-	private String getStudentNameAtPageNumber(int pageNumber) throws IOException {
-		if (pageNumber - 1 < 0) return "";
-		
-		PDFTextStripper reader = new PDFTextStripper();
-		reader.setStartPage(pageNumber);
-		reader.setEndPage(pageNumber);
-		String pageText = reader.getText(document);
-		Optional<String> studentNameOpt = getStudentNameFromPageText(pageText);
-		
-		return studentNameOpt.orElse(getStudentNameAtPageNumber(pageNumber - 1));
-	}
-	
-	private Optional<String> getStudentNameFromPageText(String pageText) {
-		String[] lines = pageText.split("\n");
-		if (lines.length > 2 && lines[0].contains("Page") && lines[2].isBlank())
-			return Optional.of(lines[1].trim());
-		
-		return Optional.empty();
 	}
 	
 	public PDDocumentBuilder addFooter() {
