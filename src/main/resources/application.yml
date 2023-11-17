@@ -15,7 +15,3 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     operationsSorter: method
-
-pdf:
-  mapper:
-    min-parallel-pages: 30
