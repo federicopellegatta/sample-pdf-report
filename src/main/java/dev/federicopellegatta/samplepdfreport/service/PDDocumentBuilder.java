@@ -38,19 +38,20 @@ public class PDDocumentBuilder {
 			                                                                 PDPageContentStream.AppendMode.APPEND,
 			                                                                 true, false)) {
 				contentStream.setFont(font, fontSize);
-				float startY = page.getCropBox().getUpperRightY() - marginY;
-				float startX = page.getCropBox().getLowerLeftX() + marginX;
+				float topY = page.getCropBox().getUpperRightY() - marginY;
+				float leftX = page.getCropBox().getLowerLeftX() + marginX;
+				float pageWidth = page.getCropBox().getWidth();
 				
 				// add an image
 				PDImageXObject pdImage =
 						PDImageXObject.createFromFile("src/main/resources/static/imgs/logo.jpg", document);
-				int imageWidth = (int) (page.getCropBox().getWidth() / 20);
-				int imageHeight = (int) (page.getCropBox().getWidth() / 20);
-				contentStream.drawImage(pdImage, startX, startY - imageHeight, imageWidth, imageHeight);
+				int imageWidth = (int) (pageWidth / 20);
+				int imageHeight = (int) (pageWidth / 20);
+				contentStream.drawImage(pdImage, leftX, topY - imageHeight, imageWidth, imageHeight);
 				
 				// add some text next to the image
 				contentStream.beginText();
-				contentStream.newLineAtOffset(startX + imageWidth + 10, startY - fontSize);
+				contentStream.newLineAtOffset(leftX + imageWidth + 10, topY - fontSize);
 				contentStream.showText("Highland College");
 				contentStream.endText();
 				
@@ -58,7 +59,7 @@ public class PDDocumentBuilder {
 				String studentName = studentNamesMap.getOrDefault(pageNumber, "");
 				float textWidth = getTextWidth(font, fontSize, studentName);
 				contentStream.beginText();
-				contentStream.newLineAtOffset(page.getCropBox().getWidth() - marginX - textWidth, startY - fontSize);
+				contentStream.newLineAtOffset(pageWidth - marginX - textWidth, topY - fontSize);
 				contentStream.showText(studentName);
 				contentStream.endText();
 				
@@ -77,6 +78,9 @@ public class PDDocumentBuilder {
 		int fontSize = 12;
 		PDType1Font font = PDType1Font.TIMES_ROMAN;
 		
+		float marginX = 40f;
+		float marginY = 25f;
+		
 		String today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		for (PDPage page : document.getPages()) {
 			
@@ -84,11 +88,11 @@ public class PDDocumentBuilder {
 			                                                                 PDPageContentStream.AppendMode.APPEND,
 			                                                                 true, false)) {
 				contentStream.setFont(font, fontSize);
-				float y = page.getCropBox().getLowerLeftY() + 25;
-				float startX = page.getCropBox().getLowerLeftX() + 40;
+				float bottomY = page.getCropBox().getLowerLeftY() + marginY;
+				float leftX = page.getCropBox().getLowerLeftX() + marginX;
 				
 				contentStream.beginText();
-				contentStream.newLineAtOffset(startX, y);
+				contentStream.newLineAtOffset(leftX, bottomY);
 				contentStream.showText("Generated on " + today);
 				contentStream.endText();
 				
@@ -112,20 +116,21 @@ public class PDDocumentBuilder {
 			try (PDPageContentStream contentStream = new PDPageContentStream(document, page,
 			                                                                 PDPageContentStream.AppendMode.APPEND,
 			                                                                 true, false)) {
-				float height = page.getMediaBox().getHeight();
-				float width = page.getMediaBox().getWidth();
+				float pageHeight = page.getMediaBox().getHeight();
+				float pageWidth = page.getMediaBox().getWidth();
 				
-				double beta = Math.atan(height / width);
+				double beta = Math.atan(pageHeight / pageWidth);
 				double alpha = Math.toRadians(180.0) - beta - Math.toRadians(90);
 				double a = textWidth * Math.sin(alpha);
 				double b = textWidth * Math.cos(alpha);
 				
-				Matrix textMatrix = Matrix.getRotateInstance(beta, (float) ((width - a) / 2),
-				                                             (float) ((height - b) / 2) - (float) fontSize / 2);
+				Matrix textMatrix = Matrix.getRotateInstance(beta,
+				                                             (float) ((pageWidth - a) / 2),
+				                                             (float) ((pageHeight - b) / 2) - (float) fontSize / 2);
 				
-				PDExtendedGraphicsState r0 = new PDExtendedGraphicsState();
-				r0.setNonStrokingAlphaConstant(0.5f);
-				contentStream.setGraphicsStateParameters(r0);
+				PDExtendedGraphicsState pdExtendedGraphicsState = new PDExtendedGraphicsState();
+				pdExtendedGraphicsState.setNonStrokingAlphaConstant(0.5f);
+				contentStream.setGraphicsStateParameters(pdExtendedGraphicsState);
 				contentStream.setNonStrokingColor(new Color(155, 155, 155)); // grey
 				contentStream.beginText();
 				contentStream.setFont(font, fontSize);
