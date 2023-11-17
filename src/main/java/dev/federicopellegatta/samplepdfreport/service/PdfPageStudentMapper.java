@@ -4,24 +4,33 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.io.InputStream;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
 public class PdfPageStudentMapper {
 	private final PDDocument document;
+	private final int minParallelPages;
 	
 	public PdfPageStudentMapper(PDDocument document) {
 		this.document = document;
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		Properties properties = new Properties();
+		try {
+			properties.load(loader.getResourceAsStream("application.yml"));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		this.minParallelPages = Integer.parseInt(properties.getProperty("pdf.mapper.min-parallel-pages", "10"));
 	}
 	
 	public Map<Integer, String> getPageNumberToStudentNameMap() {
-		return document.getNumberOfPages() < 30 ? createMapNonParallel() : createMapParallel();
+		return document.getNumberOfPages() <= minParallelPages ? createMapNonParallel() : createMapParallel();
 	}
 	
 	private Map<Integer, String> createMapParallel() {
