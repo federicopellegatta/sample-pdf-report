@@ -8,7 +8,6 @@ import dev.federicopellegatta.samplepdfreport.utils.MathUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,16 +53,6 @@ public class StudentStatistics {
 								numberOfFailedStudentsBySubject.get(subject)
 						)
 				));
-	}
-	
-	public double getAverageMark() {
-		double averageMark = students.stream()
-				.map(StudentResponse::getSubjects)
-				.flatMap(Collection::stream)
-				.mapToDouble(SubjectResponse::getAverage)
-				.average()
-				.orElse(0);
-		return new Mark(averageMark).getMarkRounded(2);
 	}
 	
 	public Map<Subject, Float> getAverageMarkBySubject() {
