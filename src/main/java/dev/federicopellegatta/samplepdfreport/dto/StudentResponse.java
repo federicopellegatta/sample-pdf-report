@@ -56,4 +56,12 @@ public class StudentResponse {
 	public String getCompleteName() {
 		return name + " " + surname;
 	}
+	
+	public boolean isPassed() {
+		return subjects.stream().allMatch(SubjectResponse::isPassed);
+	}
+	
+	public Collection<SubjectResponse> getFailedSubjects() {
+		return subjects.stream().filter(s -> !s.isPassed()).toList();
+	}
 }

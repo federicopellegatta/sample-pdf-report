@@ -33,4 +33,8 @@ public class SubjectResponse {
 		double avg = markEntities.stream().mapToDouble(MarkEntity::getMark).average().orElse(0);
 		this.average = Math.round(avg * 10) / 10f; // round to 1 decimal
 	}
+	
+	public boolean isPassed() {
+		return average > 5.5f;
+	}
 }

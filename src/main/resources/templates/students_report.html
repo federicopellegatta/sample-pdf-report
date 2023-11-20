@@ -25,8 +25,10 @@
 
     <div style="margin-bottom: 40px;">
         <div id="left-element">
-            <img th:if="${student.gender.name() == 'MALE'}" src="../static/imgs/male-avatar.png" alt="Avatar" width="100%"/>
-            <img th:unless="${student.gender.name() == 'MALE'}" src="../static/imgs/female-avatar.png" alt="Avatar" width="100%"/>
+            <img th:if="${student.gender.name() == 'MALE'}" src="../static/imgs/male-avatar.png" alt="Avatar"
+                 width="100%"/>
+            <img th:unless="${student.gender.name() == 'MALE'}" src="../static/imgs/female-avatar.png" alt="Avatar"
+                 width="100%"/>
         </div>
         <div id="right-element" class="container">
             <div class="vertical-center">
@@ -49,6 +51,18 @@
                     </tr>
                 </table>
             </div>
+        </div>
+    </div>
+    <div>
+        <div th:if="${student.isPassed()}" class="alert alert-success" role="alert">
+            <span th:text="${student.getCompleteName()}">Student</span> has been passed to the next class!
+        </div>
+        <div th:unless="${student.isPassed()}" class="alert alert-danger" role="alert">
+            <span th:text="${student.getCompleteName()}">Student</span> has <span
+                th:text="${student.getFailedSubjects().size()}">1</span> failed subjects:
+            <ul>
+                <li th:each="subject : ${student.getFailedSubjects()}" th:text="${subject.subject}">MATH</li>
+            </ul>
         </div>
     </div>
 
