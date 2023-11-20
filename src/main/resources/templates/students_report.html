@@ -29,7 +29,7 @@
 <div>
 
 </div>
-
+<!-- FRONT PAGE -->
 <div class="container">
     <div>
         <img class="center" src="../static/imgs/logo.jpg" alt="Highland College logo" width="80%"/>
@@ -37,6 +37,53 @@
     </div>
 </div>
 
+<!-- SUMMARY PAGE -->
+<div style="page-break-before: always;">
+        <h1>Summary</h1>
+        <table class="info" style="margin-bottom: 30px">
+            <tr>
+                <td>Number of students:</td>
+                <td th:text="${statistics.getNumberOfStudents()}">100</td>
+            </tr>
+            <tr>
+                <td>Number of passed students:</td>
+                <td th:text="|${statistics.getNumberOfPassedStudents()} (${statistics.getPercentageOfPassedStudents()}%)|">
+                    80 (80.00%)
+                </td>
+            </tr>
+            <tr>
+                <td>Number of failed students:</td>
+                <td th:text="|${statistics.getNumberOfFailedStudents()} (${statistics.getPercentageOfFailedStudents()}%)|">
+                    20 (20.00%)
+                </td>
+            </tr>
+        </table>
+
+    <table class="info" style="margin-top: 30px">
+        <thead>
+        <tr>
+            <th scope="col">Subject</th>
+            <th scope="col">Average mark</th>
+            <th scope="col">Number of passed students</th>
+            <th scope="col">Number of failed students</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="entry : ${statistics.getSubjectStatisticsMap()}">
+            <td><b th:text="${entry.key}">MATH</b></td>
+            <td th:text="${entry.value.average}">6.0</td>
+            <td th:text="|${entry.value.numberOfPassedStudents} (${entry.value.percentageOfPassedStudents}%)|">
+                76 (76.00%)
+            </td>
+            <td th:text="|${entry.value.numberOfFailedStudents} (${entry.value.percentageOfFailedStudents}%)|">
+                24 (24.00%)
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- STUDENT REPORT -->
 <div style="page-break-before: always;" th:each="student : ${students}">
     <h1 th:text="${student.getCompleteName()}">Student name</h1>
 

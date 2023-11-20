@@ -1,5 +1,6 @@
 package dev.federicopellegatta.samplepdfreport.service;
 
+import dev.federicopellegatta.samplepdfreport.utils.MathUtils;
 import lombok.Getter;
 
 @Getter
@@ -18,10 +19,7 @@ public class Mark {
 	}
 	
 	public float getMarkRounded(int places) {
-		if (places < 0) throw new IllegalArgumentException("Places cannot be negative");
-		
-		double scale = Math.pow(10, places);
-		return (float) (Math.round(mark * scale) / scale);
+		return MathUtils.round(mark, places);
 	}
 	
 }

@@ -2,10 +2,15 @@ package dev.federicopellegatta.samplepdfreport.service;
 
 import dev.federicopellegatta.samplepdfreport.dto.StudentResponse;
 import dev.federicopellegatta.samplepdfreport.dto.SubjectResponse;
+import dev.federicopellegatta.samplepdfreport.dto.SubjectStatistics;
 import dev.federicopellegatta.samplepdfreport.entity.Subject;
+import dev.federicopellegatta.samplepdfreport.utils.MathUtils;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class StudentStatistics {
@@ -28,11 +33,27 @@ public class StudentStatistics {
 	}
 	
 	public double getPercentageOfPassedStudents() {
-		return (double) getNumberOfPassedStudents() / getNumberOfStudents() * 100;
+		return MathUtils.round((float) getNumberOfPassedStudents() / getNumberOfStudents() * 100, 2);
 	}
 	
 	public double getPercentageOfFailedStudents() {
-		return (double) getNumberOfFailedStudents() / getNumberOfStudents() * 100;
+		return MathUtils.round((float) getNumberOfFailedStudents() / getNumberOfStudents() * 100, 2);
+	}
+	
+	public Map<Subject, SubjectStatistics> getSubjectStatisticsMap() {
+		Map<Subject, Float> averageMarkBySubject = getAverageMarkBySubject();
+		Map<Subject, Integer> numberOfPassedStudentsBySubject = getNumberOfPassedStudentsBySubject();
+		Map<Subject, Integer> numberOfFailedStudentsBySubject = getNumberOfFailedStudentsBySubject();
+		
+		return Arrays.stream(Subject.values())
+				.collect(Collectors.toMap(
+						Function.identity(),
+						subject -> new SubjectStatistics(
+								averageMarkBySubject.get(subject),
+								numberOfPassedStudentsBySubject.get(subject),
+								numberOfFailedStudentsBySubject.get(subject)
+						)
+				));
 	}
 	
 	public double getAverageMark() {
