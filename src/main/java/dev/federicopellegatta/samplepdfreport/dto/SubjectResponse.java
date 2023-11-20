@@ -2,6 +2,7 @@ package dev.federicopellegatta.samplepdfreport.dto;
 
 import dev.federicopellegatta.samplepdfreport.entity.MarkEntity;
 import dev.federicopellegatta.samplepdfreport.entity.Subject;
+import dev.federicopellegatta.samplepdfreport.service.Mark;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,7 +32,7 @@ public class SubjectResponse {
 		this.marks = markEntities.stream().map(MarkResponse::new).toList();
 		
 		double avg = markEntities.stream().mapToDouble(MarkEntity::getMark).average().orElse(0);
-		this.average = Math.round(avg * 10) / 10f; // round to 1 decimal
+		this.average = new Mark(avg).getMarkRounded(1); // round to 1 decimal
 	}
 	
 	public boolean isPassed() {

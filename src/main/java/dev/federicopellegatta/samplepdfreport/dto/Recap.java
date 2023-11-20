@@ -1,6 +1,7 @@
 package dev.federicopellegatta.samplepdfreport.dto;
 
 import dev.federicopellegatta.samplepdfreport.entity.Subject;
+import dev.federicopellegatta.samplepdfreport.service.Mark;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,11 +23,11 @@ public class Recap {
 				.mapToDouble(SubjectResponse::getAverage)
 				.average()
 				.orElse(0);
-		this.average = Math.round(avg * 10) / 10f; // round to 1 decimal
+		this.average = new Mark(avg).getMarkRounded(1);
 		this.poorSubjects = subjects.stream()
-				.filter(s -> s.getAverage() < 6)
+				.filter(s -> !new Mark(s.getAverage()).isPassed())
 				.map(SubjectResponse::getSubject)
 				.toList();
-		this.isPassed = this.poorSubjects.size() < 3;
+		this.isPassed = (float) this.poorSubjects.size() / subjects.size() < 0.3f;
 	}
 }
