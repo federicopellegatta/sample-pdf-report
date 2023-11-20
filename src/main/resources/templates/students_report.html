@@ -8,10 +8,16 @@
     <link rel="stylesheet" href="../static/css/styles.css" type='text/css'/>
 
     <style>
+        @page :first {
+            @bottom-right {
+                content: "";
+            }
+        }
+
         @page {
-            size: 210mm 297mm;
+            size: 210mm 297mm; /* A4 */
             margin: 25mm 20mm 20mm 20mm;
-            /* change the margins as you want them to be. */
+
             @bottom-right {
                 content: "Page " counter(page) " of " counter(pages);
             }
@@ -20,7 +26,18 @@
     </style>
 </head>
 <body>
-<div style="page-break-after: always" th:each="student : ${students}">
+<div>
+
+</div>
+
+<div class="container">
+    <div>
+        <img class="center" src="../static/imgs/logo.jpg" alt="Highland College logo" width="80%"/>
+        <h1 class="center" style="font-size: 50px">Highland College student report</h1>
+    </div>
+</div>
+
+<div style="page-break-before: always;" th:each="student : ${students}">
     <h1 th:text="${student.getCompleteName()}">Student name</h1>
 
     <div style="margin-bottom: 40px;">

@@ -72,6 +72,16 @@ tfoot tr {
     position: relative;
 }
 
+img.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.center {
+    text-align: center;
+}
+
 .vertical-center {
     margin: 0;
     position: absolute;

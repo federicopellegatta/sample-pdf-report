@@ -25,9 +25,11 @@ public class PdfGeneratorService {
 	
 	public byte[] generatePdfReport(boolean header, boolean footer, boolean watermark) {
 		Collection<StudentResponse> students = studentService.allStudents();
+		StudentStatistics statistics = new StudentStatistics(students);
 		
 		Context context = new Context();
 		context.setVariable("students", students);
+		context.setVariable("statistics", statistics);
 		String html = parseHtmlTemplate("students_report", context);
 		
 		return savePdfDocument(html, header, footer, watermark);
