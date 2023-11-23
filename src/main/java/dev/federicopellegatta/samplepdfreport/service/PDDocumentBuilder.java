@@ -31,6 +31,7 @@ public class PDDocumentBuilder {
 		float marginY = 30f;
 		
 		int pageNumber = 1;
+		// This will slow down the process, but it's just for demo purposes
 		Map<Integer, String> studentNamesMap = new PdfPageStudentMapper(document).getPageNumberToStudentNameMap();
 		for (PDPage page : document.getPages()) {
 			
