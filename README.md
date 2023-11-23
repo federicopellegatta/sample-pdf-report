@@ -24,7 +24,8 @@ To run this application, you will need the following:
    configured.
 
 3. **Docker:** Docker is used to run a PostgreSQL database for this sample application. Make sure you have Docker
-   installed and properly configured on your machine. You will need to run `docker-compose up` in the project directory to start the
+   installed and properly configured on your machine. You will need to run `docker-compose up` in the project directory
+   to start the
    database.
 
 4. **PDFBox, OpenHTMLtoPDF, and Thymeleaf:** These libraries are used for PDF generation and HTML templating. They are
@@ -54,8 +55,10 @@ To start the application, navigate to the project directory and follow these ste
 
 5. **Generate a report:** To generate a report, you need to execute a get request to the `/api/v1/pdf-generator`
    endpoint. You can do this by opening a web browser and navigating
-   to [http://localhost:8081/api/v1/pdf-generator](http://localhost:8081/api/v1/pdf-generator).
-   This will generate a PDF report and download it to your machine.
+   to [http://localhost:8081/api/v1/pdf-generator](http://localhost:8081/api/v1/pdf-generator). This will generate a PDF
+   report and download it to your machine.
+
+You can download [`examples/output.pdf`](examples/output.pdf) to preview an example of the generated PDF report 
 
 ## Key Features
 
